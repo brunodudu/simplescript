@@ -437,28 +437,8 @@ namespace SimpleScript
             return IdTable[SecundaryToken];
         }
 
-        public Boolean Analyser()
+        public Token NextToken()
         {
-            int State = 0;
-            foreach (char c in File)
-            {
-                //TODO: Automato
-                switch (State)
-                {
-                    case 0:
-                        if (c == ' ' || c == '\t' || c == '\v' || c == '\r'
-                            || c == '\n' || c == '\f') State = 0;
-                        break;
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-                    default:
-                        break;
-                }
-            }   
-
-
             throw new NotImplementedException();
         }
     }
