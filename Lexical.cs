@@ -6,6 +6,7 @@ namespace SimpleScript
     class Lexical
     {
         public String File { get; set; }
+        private int FileIndex;
         private List<String> IdTable;
         private List<String> StringvalTable;
         private List<int> NumeralTable;
@@ -13,9 +14,11 @@ namespace SimpleScript
         public Lexical(String file)
         {
             File = file;
+            FileIndex = 0;
         }
 
-        private Token SearchKeyWord(String name)
+        // sets primary and secundary tokens
+        private Token SearchToken(String name)
         {
             var Token = new Token();
             if (name.Equals("array"))
@@ -301,7 +304,7 @@ namespace SimpleScript
             else return true;
         }
 
-        private Boolean IsCharacter(char c)
+        private Boolean IsAlpha(char c)
         {
             if ((int)c >= (int)'A' && (int)c <= (int)'Z') return true;
             if ((int)c >= (int)'a' && (int)c <= (int)'z') return true;
@@ -312,11 +315,11 @@ namespace SimpleScript
         {
             if (name.Length < 1) return false;
 
-            if (!IsCharacter(name[0])) return false;
+            if (!IsAlpha(name[0])) return false;
 
             foreach (char c in name)
             {
-                if (!IsCharacter(c) && !IsDigit(c)) return false;
+                if (!IsAlpha(c) && !IsDigit(c)) return false;
             }
 
             return true;
@@ -437,9 +440,197 @@ namespace SimpleScript
             return IdTable[SecundaryToken];
         }
 
+        private char? ReadChar()
+        {
+            if (FileIndex < File.Length)
+                return File[FileIndex++];
+            
+            return null;
+        }
+
+        private char? LookNextChar()
+        {
+            if (FileIndex < File.Length)
+                return File[FileIndex+1];
+            
+            return null;
+        }
+
+        private Boolean IsSpace(char? c)
+        {
+            if (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\v'
+                || c == '\r') return true;
+            
+            return false;
+        }
+
         public Token NextToken()
         {
-            throw new NotImplementedException();
+            var Token = new Token();
+            char? nextChar = ReadChar();
+            while (IsSpace(nextChar))
+            {
+                nextChar = ReadChar();
+            }
+
+            if (IsAlpha(nextChar.Value))
+            {
+                String text = "";
+                do
+                {
+                    text += nextChar.ToString();
+                    nextChar = ReadChar();
+                } while (IsAlpha(nextChar.Value) || IsDigit(nextChar.Value));
+
+                Token = SearchToken(text);
+            }
+            else if (IsDigit(nextChar.Value))
+            {
+                String numeral = "";
+                do
+                {
+                    numeral += nextChar.ToString();
+                    nextChar = ReadChar();
+                } while (IsDigit(nextChar.Value));
+
+                Token = SearchToken(numeral);
+            }
+            else if (nextChar == '\"')
+            {
+                String stringval = "";
+                do
+                {
+                    stringval += nextChar.ToString();
+                    nextChar = ReadChar();
+                } while (nextChar != '\"');
+                stringval += nextChar.ToString();
+
+                Token = SearchToken(stringval);
+            }
+            else if (nextChar == '\'')
+            {
+                String character = "";
+                do
+                {
+                    character += nextChar.ToString();
+                    nextChar = ReadChar();
+                } while (nextChar != '\'');
+                character += nextChar.ToString();
+
+                Token = SearchToken(character);
+            }
+            else 
+            {
+                char? lookedChar = LookNextChar();
+                switch (nextChar)
+                {
+                    case '>':
+                        if (lookedChar == '=')
+                        {
+                            ReadChar();
+                            Token = SearchToken(">=");
+                        }
+                        else Token = SearchToken(">");
+                        break;
+                    case '<':
+                        if (lookedChar == '=')
+                        {
+                            ReadChar();
+                            Token = SearchToken("<=");
+                        }
+                        else Token = SearchToken("<");
+                        break;
+                    case '=':
+                        if (lookedChar == '=')
+                        {
+                            ReadChar();
+                            Token = SearchToken("==");
+                        }
+                        else Token = SearchToken("=");
+                        break;
+                    case '!':
+                        if (lookedChar == '=')
+                        {
+                            ReadChar();
+                            Token = SearchToken("!=");
+                        }
+                        else Token = SearchToken("!");
+                        break;
+                    case '-':
+                        if (lookedChar == '-')
+                        {
+                            ReadChar();
+                            Token = SearchToken("--");
+                        }
+                        else Token = SearchToken("-");
+                        break;
+                    case '+':
+                        if (lookedChar == '+')
+                        {
+                            ReadChar();
+                            Token = SearchToken("++");
+                        }
+                        else Token = SearchToken("+");
+                        break;
+                    case '&':
+                        if (lookedChar == '&')
+                        {
+                            ReadChar();
+                            Token = SearchToken("&&");
+                        }
+                        else Token = SearchToken("&");
+                        break;
+                    case '|':
+                        if (lookedChar == '|')
+                        {
+                            ReadChar();
+                            Token = SearchToken("||");
+                        }
+                        else Token = SearchToken("|");
+                        break;
+                    case '*':
+                        Token = SearchToken("*");
+                        break;
+                    case '/':
+                        Token = SearchToken("/");
+                        break;
+                    case ',':
+                        Token = SearchToken(",");
+                        break;
+                    case '.':
+                        Token = SearchToken(".");
+                        break;
+                    case ';':
+                        Token = SearchToken(";");
+                        break;
+                    case ':':
+                        Token = SearchToken(":");
+                        break;
+                    case '(':
+                        Token = SearchToken("(");
+                        break;
+                    case ')':
+                        Token = SearchToken(")");
+                        break;
+                    case '[':
+                        Token = SearchToken("[");
+                        break;
+                    case ']':
+                        Token = SearchToken("]");
+                        break;
+                    case '{':
+                        Token = SearchToken("{");
+                        break;
+                    case '}':
+                        Token = SearchToken("}");
+                        break;
+                    default:
+                        Token = SearchToken(nextChar.ToString());
+                        break;
+                }
+            }
+
+            return Token;
         }
     }
 }
