@@ -6,15 +6,19 @@ namespace SimpleScript
     class Lexical
     {
         public String File { get; set; }
-        private int FileIndex;
-        private List<String> IdTable;
-        private List<String> StringvalTable;
-        private List<int> NumeralTable;
-        private List<char> CharTable;
+        private int FileIndex = 0;
+
+        public int GetFileIndex()
+        {
+            return FileIndex;
+        }
+        private List<String> IdTable = new List<String>();
+        private List<String> StringvalTable = new List<String>();
+        private List<int> NumeralTable = new List<int>();
+        private List<char> CharTable = new List<char>();
         public Lexical(String file)
         {
             File = file;
-            FileIndex = 0;
         }
 
         // sets primary and secundary tokens
@@ -231,6 +235,12 @@ namespace SimpleScript
                 Token.Secundary = null;
                 return Token;
             }
+            if (name.Equals("="))
+            {
+                Token.Primary = PrimaryToken.EQUALS;
+                Token.Secundary = null;
+                return Token;
+            }
             if (name.Equals("+"))
             {
                 Token.Primary = PrimaryToken.PLUS;
@@ -289,7 +299,7 @@ namespace SimpleScript
 
             foreach (char c in name)
             {
-                if (IsDigit(c))
+                if (!IsDigit(c))
                 {
                     return false;
                 }
@@ -298,14 +308,16 @@ namespace SimpleScript
             return true;
         }
 
-        private Boolean IsDigit(char c)
+        private Boolean IsDigit(char? c)
         {
+            if (c == null) return false;
             if ((int)c < (int)'0' || (int)c > (int)'9') return false;
             else return true;
         }
 
-        private Boolean IsAlpha(char c)
+        private Boolean IsAlpha(char? c)
         {
+            if (c == null) return false;
             if ((int)c >= (int)'A' && (int)c <= (int)'Z') return true;
             if ((int)c >= (int)'a' && (int)c <= (int)'z') return true;
             return false;
@@ -450,8 +462,8 @@ namespace SimpleScript
 
         private char? LookNextChar()
         {
-            if (FileIndex < File.Length)
-                return File[FileIndex+1];
+            if (FileIndex < File.Length - 1)
+                return File[FileIndex];
             
             return null;
         }
@@ -473,25 +485,25 @@ namespace SimpleScript
                 nextChar = ReadChar();
             }
 
-            if (IsAlpha(nextChar.Value))
+            if (IsAlpha(nextChar))
             {
                 String text = "";
                 do
                 {
                     text += nextChar.ToString();
                     nextChar = ReadChar();
-                } while (IsAlpha(nextChar.Value) || IsDigit(nextChar.Value));
+                } while (IsAlpha(nextChar) || IsDigit(nextChar));
 
                 Token = SearchToken(text);
             }
-            else if (IsDigit(nextChar.Value))
+            else if (IsDigit(nextChar))
             {
                 String numeral = "";
                 do
                 {
                     numeral += nextChar.ToString();
                     nextChar = ReadChar();
-                } while (IsDigit(nextChar.Value));
+                } while (IsDigit(nextChar));
 
                 Token = SearchToken(numeral);
             }

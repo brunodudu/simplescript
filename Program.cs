@@ -9,9 +9,16 @@ namespace SimpleScript
             String fileName = args[0];
             String file = System.IO.File.ReadAllTextAsync(fileName).Result;
 
-            var Lexical = new Lexical(file);
+            Lexical lexical = new Lexical(file);
 
-            throw new NotImplementedException();
+            while (lexical.GetFileIndex() != file.Length)
+            {
+                Token token = lexical.NextToken();
+                Console.Out.WriteLine(token.Primary);
+                Console.Out.WriteLine(token.Secundary);
+            }
+
+            // throw new NotImplementedException();
         }
     }
 }
