@@ -290,7 +290,7 @@ namespace SimpleScript
                 return Token;
             }
 
-            return SearchName(name);
+            return SearchSecundaryToken(name);
         }
 
         private Boolean IsNumeral(String name)
@@ -337,7 +337,7 @@ namespace SimpleScript
             return true;
         }
 
-        private Token SearchName(String name)
+        private Token SearchSecundaryToken(String name)
         {
             var Token = new Token();
             Token.Secundary = null;
