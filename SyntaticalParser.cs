@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SimpleScript
 {
 	class SyntaticalParser
@@ -7,133 +9,89 @@ namespace SimpleScript
 			return s == "acc";
 		}
 
+		private int Shift(String s)
+		{
+			if (s.Length == 0)
+			{
+				return -1;
+			}
+
+			if (s[0] != 's')
+			{
+				return -1;
+			}
+
+			try
+			{
+				return int.Parse(s.Substring(1));
+			}
+			catch (Exception err)
+			{
+				return -1;
+			}
+		}
+
+		private int Reduce(String s)
+		{
+			if (s.Length == 0)
+			{
+				return -1;
+			}
+
+			if (s[0] != 'r')
+			{
+				return -1;
+			}
+
+			try
+			{
+				return int.Parse(s.Substring(1));
+			}
+			catch (Exception err)
+			{
+				return -1;
+			}
+		}
+
 		public void Run(Syntatical syntatical, String out, Lexical lexer)
 		{
 			int state = 0;
 			Token currentToken = lexer.NextToken();
+			NonTerminals nonterminals = new NonTerminals();
 			var action = syntatical.actionTable[state][currentToken.Primary];
 			// var sem = semantics.NewAnalyser(lexer, out);
 
 			while (!Accept(action))
-			{}
+			{
+				state = Shift(action);
+				if (state != -1)
+				{
+					syntatical.stateStack.Push(state);
+					currentToken = lexer.NextToken();
+					action = syntatical.actionTable[state][currentToken.Primary];
+					continue;
+				}
 
-
-			/////////////
+				int rule = Reduce(action);
+				if (rule != -1)
+				{
+					var amountToPop = nonterminals.RuleNumberOfTokens[rule-1];
+					while (amountToPop > 0)
+					{
+						syntatical.stateStack.Pop();
+						amountToPop = amountToPop - 1;
+					}
+					var temporaryState = syntatical.stateStack.Peek();
+					var leftToken = nonterminals.RuleLeftTokens[rule-1];
+					var stateString = syntatical.actionTable[temporaryState][leftToken];
+					state = int.Parse(stateString);
+					syntatical.stateStack.Push(state);
+					action = syntatical.actionTable[state][currentToken];
+					// sem.Parse(rule);
+					continue;
+				}
+			}
 			// sem.Close();
 		}
 	}
-}
-// package syntatical
-
-// import (
-// 	"fmt"
-// 	"strconv"
-
-// 	"github.com/lucbarr/sslang/lexical"
-// 	"github.com/lucbarr/sslang/nonterminals"
-// 	"github.com/lucbarr/sslang/semantics"
-// )
-
-// // Parser parses the program
-// type Parser struct {
-// 	actionTable [][]string
-
-// 	stateStack []int
-// }
-
-// // NewParser returns a parser from action table
-// func NewParser() (*Parser, error) {
-// 	return &Parser{
-// 		actionTable: actionTable,
-// 		stateStack:  []int{0},
-// 	}, nil
-// }
-
-// Run runs the lexical analysis
-func (p *Parser) Run(lexer *lexical.Lexer, out string) error {
-	state := 0
-	currentToken, _ := lexer.NextToken()
-	action := p.actionTable[state][currentToken]
-
-	sem := semantics.NewAnalyser(lexer, out)
-	defer sem.Close()
-
-	for !accept(action) {
-		state, ok := shift(action)
-		if ok {
-			p.stateStack = append(p.stateStack, state)
-
-			currentToken, _ = lexer.NextToken()
-			action = p.actionTable[state][currentToken]
-
-			continue
-		}
-
-		rule, ok := reduce(action)
-		if ok {
-			amountToPop := nonterminals.RuleNumberOfTokens[rule-1]
-			p.stateStack = p.stateStack[:len(p.stateStack)-amountToPop]
-
-			temporaryState := p.stateStack[len(p.stateStack)-1]
-
-			leftToken := nonterminals.RuleLeftTokens[rule-1]
-			stateString := p.actionTable[temporaryState][leftToken]
-
-			state, err := strconv.Atoi(stateString)
-			if err != nil {
-				return err
-			}
-
-			p.stateStack = append(p.stateStack, state)
-
-			action = p.actionTable[state][currentToken]
-
-			sem.Parse(rule)
-			continue
-		}
-
-		return fmt.Errorf("Syntax error at line %v", lexer.Line)
-	}
-
-	return nil
-}
-
-func accept(s string) bool {
-	return s == "acc"
-}
-
-func reduce(s string) (int, bool) {
-	if len(s) == 0 {
-		return -1, false
-	}
-
-	if s[0] != 'r' {
-		return -1, false
-	}
-
-	n, err := strconv.Atoi(s[1:])
-
-	if err != nil {
-		return -1, false
-	}
-
-	return n, true
-}
-
-func shift(s string) (int, bool) {
-	if len(s) == 0 {
-		return -1, false
-	}
-
-	if s[0] != 's' {
-		return -1, false
-	}
-
-	n, err := strconv.Atoi(s[1:])
-
-	if err != nil {
-		return -1, false
-	}
-
-	return n, true
 }
