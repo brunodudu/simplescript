@@ -5,6 +5,6 @@ namespace SimpleScript
     class ScopeAnalyser
     {
         public int Level { get; set; }
-        public List<ScopeObject> SymbolTable { get; set; }
+        public ScopeObject[] SymbolTable = new ScopeObject[64];
     }
 }
