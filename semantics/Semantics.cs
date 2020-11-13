@@ -3,8 +3,8 @@ namespace SimpleScript
     // Analyser is the semantical analyser
     public class SemanticalAnalyser {
         public Attribute[] Stack { get; set; }
-        // *scope.Analyser scope { get; set; }
-        // *lexical.Lexer lexer { get; set; }
+        ScopeAnalyser scope { get; set; }
+        Lexical lexer { get; set; }
         public File file { get; set; }
         public int nFuncs { get; set; }
         public int label { get; set; }
@@ -16,11 +16,9 @@ namespace SimpleScript
 
         // NewAnalyser creates a new analyser
         public SemanticalAnalyser NewAnalyser(Lexical l, string fileName) {
-            // f, _ := os.Create(fileName) // TODO: Check
             file = File.Create(fileName);
             SemanticalAnalyser semAnalyser = new SemanticalAnalyser();
-            // scope: &scope.Analyser{}, // TODO: REVIEW
-            // semAnalyser.scope = scope.SemanticalAnalyser;
+            semAnalyser.scope = scope.SemanticalAnalyser;
             semAnalyser.Stack = new Attribute[];
             semAnalyser.file = file;
             semAnalyser.lexer = l;
@@ -28,7 +26,7 @@ namespace SimpleScript
 
         // Parse performs a semantical reduction rule parsing logic
         public void Parse(ref SemanticalAnalyser analyser, int r) {
-            RuleEnum rule = Rule(r)
+            RuleEnum rule = Rule(r);
 
             switch (rule) {
                 case RuleEnum.P0:
@@ -42,150 +40,137 @@ namespace SimpleScript
                 case RuleEnum.DE1:
                     break;
                 case RuleEnum.T0: // T-> 'integer'
-                    t := TStatic.Attribute.(T)
-                    t.Type = scope.PIntObj
+                    var t = TStatic.Attribute.(T);
+                    t.Type = scope.PIntObj;
 
-                    TStatic.Size = 1
-                    TStatic.Type = nonterminals.T
-                    TStatic.Attribute = t
+                    TStatic.Size = 1;
+                    TStatic.Type = nonterminals.T;
+                    TStatic.Attribute = t;
 
-                    a.Push(TStatic)
+                    a.Push(TStatic);
                     break;
                 case RuleEnum.T1: // T -> 'char'
-                    t := TStatic.Attribute.(T)
-                    t.Type = scope.PCharObj
+                    var t = TStatic.Attribute.(T);
+                    t.Type = scope.PCharObj;
 
-                    TStatic.Size = 1
-                    TStatic.Type = nonterminals.T
-                    TStatic.Attribute = t
+                    TStatic.Size = 1;
+                    TStatic.Type = nonterminals.T;
+                    TStatic.Attribute = t;
 
-                    a.Push(TStatic)
+                    a.Push(TStatic);
                     break;
                 case RuleEnum.T2: // T -> 'boolean'
-                    t := TStatic.Attribute.(T)
-                    t.Type = scope.PBoolObj
+                    var t = TStatic.Attribute.(T);
+                    t.Type = scope.PBoolObj;
 
-                    TStatic.Size = 1
-                    TStatic.Type = nonterminals.T
-                    TStatic.Attribute = t
+                    TStatic.Size = 1;
+                    TStatic.Type = nonterminals.T;
+                    TStatic.Attribute = t;
 
-                    a.Push(TStatic)
+                    a.Push(TStatic);
                     break;
                 case RuleEnum.T3: // T -> 'string'
-                    t := TStatic.Attribute.(T)
-                    t.Type = scope.PStringObj
+                    var t = TStatic.Attribute.(T);
+                    t.Type = scope.PStringObj;
 
-                    TStatic.Size = 1
-                    TStatic.Type = nonterminals.T
-                    TStatic.Attribute = t
+                    TStatic.Size = 1;
+                    TStatic.Type = nonterminals.T;
+                    TStatic.Attribute = t;
 
-                    a.Push(TStatic)
+                    a.Push(TStatic);
                     break;
                 case RuleEnum.T4: // T -> IDU
-                    IDUStatic = a.Top()
-                    id := IDUStatic.Attribute.(ID)
-                    p = id.Object
-                    a.Pop()
+                    IDUStatic = a.Top();
+                    var id = IDUStatic.Attribute.(ID);
+                    p = id.Object;
+                    a.Pop();
 
-                    if p.Kind.IsType() || p.Kind == scope.KindUniversal {
-                        t := TStatic.Attribute.(T)
-                        t.Type = p
-                        TStatic.Attribute = t
+                    if (p.Kind.IsType() || p.Kind == scope.KindUniversal) {
+                        var t = TStatic.Attribute.(T);
+                        t.Type = p;
+                        TStatic.Attribute = t;
 
-                        if p.Kind == scope.KindAliasType {
-                            alias := p.T.(scope.Alias)
-                            TStatic.Size = alias.Size
-                        } else if p.Kind == scope.KindArrayType {
-                            arr := p.T.(scope.Array)
-                            TStatic.Size = arr.Size
-                        } else if p.Kind == scope.KindStructType {
-                            strct := p.T.(scope.Struct)
-                            TStatic.Size = strct.Size
+                        if (p.Kind == scope.KindAliasType) {
+                            var alias = p.T.(scope.Alias);
+                            TStatic.Size = alias.Size;
+                        } else if (p.Kind == scope.KindArrayType) {
+                            var arr = p.T.(scope.Array);
+                            TStatic.Size = arr.Size;
+                        } else if (p.Kind == scope.KindStructType) {
+                            strcvar t = p.T.(scope.Struct);
+                            TStatic.Size = strct.Size;
                         }
                     } else {
-                        t := TStatic.Attribute.(T)
-                        t.Type = scope.PUniversalObj
+                        var t = TStatic.Attribute.(T);
+                        t.Type = scope.PUniversalObj;
 
-                        TStatic.Attribute = t
-                        TStatic.Size = 0
+                        TStatic.Attribute = t;
+                        TStatic.Size = 0;
                     }
-                    TStatic.Type = nonterminals.T
-                    a.Push(TStatic)
+                    TStatic.Type = nonterminals.T;
+                    a.Push(TStatic);
                     break;
                 case RuleEnum.DT0: // DT -> 'type' IDD '=' 'array' '[' NUM ']' 'of' T
-                    TStatic = a.Top()
-                    a.Pop()
-                    NUMStatic = a.Top()
-                    a.Pop()
-                    IDDStatic = a.Top()
-                    a.Pop()
+                    TStatic = a.Top();
+                    a.Pop();
+                    NUMStatic = a.Top();
+                    a.Pop();
+                    IDDStatic = a.Top();
+                    a.Pop();
 
-                    id := IDDStatic.Attribute.(ID)
-                    num := NUMStatic.Attribute.(NUM)
-                    typ := TStatic.Attribute.(T)
+                    var id = IDDStatic.Attribute.(ID);
+                    var num = NUMStatic.Attribute.(NUM);
+                    var typ = TStatic.Attribute.(T);
 
-                    p = id.Object
-                    n = num.Val
-                    t = typ.Type
+                    p = id.Object;
+                    n = num.Val;
+                    t = typ.Type;
 
-                    p.Kind = scope.KindArrayType
-                    p.T = scope.Array{
-                        NumElements: n,
-                        ElemType:    t,
-                        Size:        n * TStatic.Size,
-                    }
+                    p.Kind = scope.KindArrayType;
                     break;
                 case RuleEnum.DT1: // DT -> 'type' IDD '=' 'struct' NB '{' DC '}'
-                    DCStatic = a.Top()
-                    a.Pop()
-                    IDDStatic = a.Top()
-                    a.Pop()
+                    DCStatic = a.Top();
+                    a.Pop();
+                    IDDStatic = a.Top();
+                    a.Pop();
 
-                    obj := IDDStatic.Attribute.(ID)
-                    dc := DCStatic.Attribute.(DC)
-                    p = obj.Object
+                    var obj = IDDStatic.Attribute.(ID);
+                    var dc = DCStatic.Attribute.(DC);
+                    p = obj.Object;
 
-                    p.Kind = scope.KindStructType
-                    p.T = scope.Struct{
-                        Fields: dc.List,
-                        Size:   DCStatic.Size,
-                    }
-                    a.scope.EndBlock()
+                    p.Kind = scope.KindStructType;
+                    a.scope.EndBlock();
                     break;
                 case RuleEnum.DT2: // DT -> 'type' IDD '=' T
-                    TStatic = a.Top()
-                    a.Pop()
-                    IDDStatic = a.Top()
-                    a.Pop()
+                    TStatic = a.Top();
+                    a.Pop();
+                    IDDStatic = a.Top();
+                    a.Pop();
 
-                    id := IDDStatic.Attribute.(ID)
-                    typ := TStatic.Attribute.(T)
+                    var id = IDDStatic.Attribute.(ID);
+                    var typ = TStatic.Attribute.(T);
 
-                    p = id.Object
-                    t = typ.Type
+                    p = id.Object;
+                    t = typ.Type;
 
-                    p.Kind = scope.KindAliasType
-                    p.T = scope.Alias{
-                        BaseType: t,
-                        Size:     TStatic.Size,
-                    }
+                    p.Kind = scope.KindAliasType;
                     break;
                 case RuleEnum.DC0: // DC -> DC ';' LI ':' T
-                    TStatic = a.Top()
-                    a.Pop()
-                    LIStatic = a.Top()
-                    a.Pop()
-                    DC1Static = a.Top()
-                    a.Pop()
+                    TStatic = a.Top();
+                    a.Pop();
+                    LIStatic = a.Top();
+                    a.Pop();
+                    DC1Static = a.Top();
+                    a.Pop();
 
-                    li := LIStatic.Attribute.(LI)
-                    typ := TStatic.Attribute.(T)
+                    var li = LIStatic.Attribute.(LI);
+                    var typ = TStatic.Attribute.(T);
 
-                    p = li.List
-                    t = typ.Type
-                    n = DC1Static.Size
+                    p = li.List;
+                    t = typ.Type;
+                    n = DC1Static.Size;
 
-                    for p != nil && p.Kind == scope.KindUndefined {
+                    for (p != null && p.Kind == scope.KindUndefined) {
 
                         p.Kind = scope.KindField
 
@@ -316,7 +301,7 @@ namespace SimpleScript
                     a.f.WriteString(fmt.Sprintf("END_FUNC\n"))
                     pos, _ := a.f.Seek(0, os.SEEK_CUR)
                     a.f.Seek(int64(functionVarPos), os.SEEK_SET)
-                    funct := f.T.(scope.Function)
+                    funcvar t = f.T.(scope.Function)
                     a.f.WriteString(fmt.Sprintf("%02d", funct.Vars))
                     a.f.Seek(pos, os.SEEK_SET)
                     break;
@@ -337,7 +322,7 @@ namespace SimpleScript
 
                     li := LIStatic.Attribute.(LI)
                     p = li.List
-                    funct := curFunction.T.(scope.Function)
+                    funcvar t = curFunction.T.(scope.Function)
                     n = funct.Params
 
                     for p != nil && p.Kind == scope.KindUndefined {
@@ -397,7 +382,7 @@ namespace SimpleScript
                     e := EStatic.Attribute.(E)
                     t = e.Type
 
-                    mt := MTStatic.Attribute.(MT)
+                    mvar t = MTStatic.Attribute.(MT)
                     a.f.WriteString(fmt.Sprintf("L%d\n", mt.Label))
                     break;
                 case RuleEnum.U1: // U -> 'if' '(' E ')' MT M 'else' ME U
@@ -440,7 +425,7 @@ namespace SimpleScript
                     a.Pop()
 
                     mw := MWStatic.Attribute.(MW)
-                    mt := MTStatic.Attribute.(MT)
+                    mvar t = MTStatic.Attribute.(MT)
                     es := EStatic.Attribute.(E)
 
                     l1 = mw.Label
@@ -823,7 +808,7 @@ namespace SimpleScript
 
                     a.Push(FStatic)
 
-                    funct := f.T.(scope.Function)
+                    funcvar t = f.T.(scope.Function)
                     a.f.WriteString(fmt.Sprintf("\tCALL %d\n", funct.Index))
                     break;
                 case RuleEnum.F7: // F -> '-' F
@@ -1003,7 +988,7 @@ namespace SimpleScript
                         lv0.Type = scope.PUniversalObj
                         LV0Static.Attribute = lv0
                     } else {
-                        st := t.T.(scope.Struct)
+                        svar t = t.T.(scope.Struct)
                         p = st.Fields
 
                         for p != nil {
@@ -1211,7 +1196,7 @@ namespace SimpleScript
                     lp := LPStatic.Attribute.(LP)
 
                     f.Kind = scope.KindFunction
-                    funct := f.T.(scope.Function)
+                    funcvar t = f.T.(scope.Function)
                     funct.PRetType = ts.Type
                     funct.PParams = lp.List
                     funct.Params = LPStatic.Size
@@ -1266,7 +1251,7 @@ namespace SimpleScript
                     l = a.label
                     a.label++
 
-                    mt := MTStatic.Attribute.(MT)
+                    mvar t = MTStatic.Attribute.(MT)
                     mt.Label = l
 
                     MTStatic.Attribute = mt

@@ -108,50 +108,50 @@ namespace SimpleScript
 
         Attribute IDDStatic, IDUStatic, IDStatic, TStatic, LIStatic, LI0Static, LI1Static, TRUStatic, FALSStatic, STRStatic, CHRStatic, NUMStatic, DCStatic, DC0Static, DC1Static, LPStatic, LP0Static, LP1Static, EStatic, E0Static, E1Static, LStatic, L0Static, L1Static, RStatic, R0Static, R1Static, YStatic, Y0Static, Y1Static, FStatic, F0Static, F1Static, LVStatic, LV0Static, LV1Static, MCStatic, LEStatic, LE0Static, LE1Static, MTStatic, MEStatic, MWStatic, NBStatic;
 
-        // *scope.Object p, t, f;
+        ScopeObject p, t, f;
         
         int name, n, l, l1, l2;
         int functionVarPos;
-        // *scope.Object curFunction;
+        ScopeObject curFunction;
     }
 
 
     public class ID {
-        // public Object Scope.Object { get; set; }
+        public Object ScopeObject { get; set; }
         public int Name  { get; set; }
     }
 
     public class T {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
     }
   
     public class E {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
     }
 
     public class L {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
     }
 
     public class R {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
     }
 
     public class Y {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
     }
 
     public class F {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
     }
 
     public class LV {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
     }
 
     public class MC {
-        // public Scope.Object Type { get; set; }
-        // public Scope.Object Param { get; set; }
+        public ScopeObject Type { get; set; }
+        public ScopeObject Param { get; set; }
         public int Err { get; set; }
     }
     
@@ -173,48 +173,48 @@ namespace SimpleScript
     }
 
     public class LE {
-        // public Scope.Object Type { get; set; }
-        // public Scope.Object Param { get; set; }
+        public ScopeObject Type { get; set; }
+        public ScopeObject Param { get; set; }
         public int Err { get; set; }
         public int N { get; set; }
     }
 
     public class LI {
-        // public Scope.Object List { get; set; }
+        public ScopeObject List { get; set; }
     }
 
     public class DC {
-        // public Scope.Object List { get; set; }
+        public ScopeObject List { get; set; }
     }
 
     public class LP {
-        // public Scope.Object List { get; set; }
+        public ScopeObject List { get; set; }
     }
     
     public class TRUE {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
         public int Val { get; set; }
     }
 
     public class FALSE {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
         public int Val { get; set; }
     }
 
     public class CHR {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
         public int Pos { get; set; }
         public char Val { get; set; }
     }
 
     public class STR {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
         public int Pos { get; set; }
         public string Val { get; set; }
     }
 
     public class NUM {
-        // public Scope.Object Type { get; set; }
+        public ScopeObject Type { get; set; }
         public int Pos { get; set; }
         public int Val { get; set; }
     }

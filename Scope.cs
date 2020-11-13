@@ -68,5 +68,19 @@ namespace SimpleScript
 
             return obj;
         }
+
+        public bool CheckTypes(ScopeAnalyser a, ScopeObject p1, ScopeObject p2)
+        {
+            ScopeObject UniversalObj = new ScopeObject();
+            UniversalObj.Name = -1;
+            UniversalObj.Kind = Kind.KindScalarType;
+            if (p1.Equals(p2))
+                return true;
+            else if (p1.Equals(UniversalObj) || p2.Equals(UniversalObj))
+                return true;
+            else if (p1.Kind == Kind.KindUniversal || p2.Kind == Kind.KindUniversal)
+                return true;
+            return false;
+        }
     }
 }
